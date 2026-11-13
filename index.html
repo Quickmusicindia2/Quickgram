@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#11101b">
+<title>Quickgram</title>
+<style>
+:root{--bg:#11101b;--panel:#1b1928;--panel2:#242136;--text:#f7f5ff;--muted:#aaa5bd;--accent:#9b7cff;--pink:#ec78bd}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,sans-serif}
+button,input{font:inherit}button{cursor:pointer;border:0}
+.app{max-width:520px;min-height:100vh;margin:auto;padding-bottom:82px;background:var(--bg)}
+header{position:sticky;top:0;z-index:5;background:#11101bf2;backdrop-filter:blur(12px);padding:15px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ffffff12}
+.logo{font-size:25px;font-weight:850;letter-spacing:-1px;background:linear-gradient(90deg,var(--accent),var(--pink));color:transparent;background-clip:text}
+.iconbtn{background:var(--panel2);color:white;border-radius:13px;padding:9px 12px}
+main{padding:14px}.screen{display:none}.screen.active{display:block}
+.card{background:var(--panel);border:1px solid #ffffff10;border-radius:18px;padding:16px;margin-bottom:14px}
+h2{margin:4px 0 14px;font-size:22px}.muted{color:var(--muted)}
+input{width:100%;padding:14px;border:1px solid #ffffff20;border-radius:12px;background:#12111c;color:white;margin:7px 0 12px;outline:none}
+.primary{width:100%;padding:14px;border-radius:13px;background:linear-gradient(100deg,#8061ed,#bd69d3);color:white;font-weight:750}
+.link{background:none;color:#c4adff;padding:10px}
+.auth{padding:30px 22px 20px;margin-top:10vh}.auth .logo{font-size:36px;margin-bottom:6px}
+.stories{display:flex;gap:13px;overflow:auto;padding:5px 0 17px}
+.story{min-width:66px;text-align:center;font-size:12px;color:var(--muted)}
+.avatar{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;margin:0 auto 6px;background:linear-gradient(140deg,#805cf0,#ed7cb9);font-weight:800;border:2px solid #c6a5ff}
+.posthead{display:flex;align-items:center;gap:10px;margin-bottom:12px}.posthead .avatar{width:39px;height:39px;margin:0}
+.postimage{height:280px;border-radius:13px;display:grid;place-items:center;font-size:76px;background:linear-gradient(145deg,#34245c,#b56b9e 55%,#e8a66d)}
+.actions{display:flex;gap:15px;padding:11px 0}.actions button{background:none;color:white;font-size:21px;padding:0}
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);display:flex;justify-content:space-around;background:#171522f5;border-top:1px solid #ffffff18;padding:12px 5px calc(12px + env(safe-area-inset-bottom));z-index:8}
+.bottom button{background:none;color:var(--muted);font-size:22px}.bottom button.selected{color:#bba5ff}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #ffffff12}
+.pill{background:#30284a;padding:6px 10px;border-radius:99px;color:#d8caff;font-size:12px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="logo">Quickgram</div><button class="iconbtn" onclick="showScreen('settings')">⚙</button></header>
+<main>
+<section id="login" class="screen active">
+<div class="card auth">
+<div class="logo">Quickgram</div><p class="muted">Your moments. Your people.</p>
+<h2 id="authTitle">Welcome back</h2>
+<div id="nameWrap" class="hidden"><label class="muted">Your name</label><input id="displayName" placeholder="Enter your name"></div>
+<label class="muted">Email</label><input id="email" type="email" placeholder="you@example.com">
+<label class="muted">Password</label><input id="password" type="password" placeholder="At least 6 characters">
+<button class="primary" onclick="login()">Continue</button>
+<p id="authError" class="muted"></p>
+<div style="text-align:center"><button class="link" onclick="toggleAuth()" id="switchAuth">Create an account</button></div>
+<p class="muted" style="font-size:11px;text-align:center">Demo mode: account details stay on this device only.</p>
+</div>
+</section>
+<section id="home" class="screen">
+<div class="stories">
+<div class="story"><div class="avatar">+</div>Your story</div><div class="story"><div class="avatar">A</div>ananya</div><div class="story"><div class="avatar">R</div>rahul</div><div class="story"><div class="avatar">M</div>meera</div><div class="story"><div class="avatar">K</div>kabir</div>
+</div>
+<div class="card"><div class="muted">Share a moment</div><div style="display:flex;gap:8px;margin-top:10px"><input id="newPost" placeholder="What's happening?" style="margin:0"><button class="iconbtn" onclick="addPost()">Post</button></div></div>
+<div id="feed"></div>
+</section>
+<section id="profile" class="screen">
+<div class="card" style="text-align:center;padding:25px"><div class="avatar" style="width:78px;height:78px;font-size:26px" id="profileAvatar">Q</div><h2 id="profileName">Quickgram User</h2><p class="muted" id="profileEmail"></p><span class="pill">New member</span></div>
+<div class="card"><div class="row"><span>Posts</span><b id="postCount">0</b></div><div class="row"><span>Followers</span><b>0</b></div><div class="row"><span>Following</span><b>0</b></div></div>
+</section>
+<section id="settings" class="screen">
+<h2>Settings</h2><div class="card">
+<div class="row"><span>Account</span><span class="pill">Demo</span></div>
+<div class="row"><span>Notifications</span><span class="muted">Coming soon</span></div>
+<div class="row"><span>Privacy</span><span class="muted">Coming soon</span></div>
+<div class="row"><span>App version</span><b>1.0.0</b></div>
+<button class="primary" style="margin-top:18px" onclick="logout()">Log out</button>
+</div><p class="muted" style="font-size:12px">Quickgram demo build. Connect a secure backend before using real accounts or public content.</p>
+</section>
+</main>
+<nav class="bottom hidden" id="nav">
+<button onclick="showScreen('home')" data-screen="home" class="selected">⌂</button>
+<button onclick="showScreen('profile')" data-screen="profile">◎</button>
+<button onclick="showScreen('settings')" data-screen="settings">⚙</button>
+</nav>
+</div>
+<script>
+let signup=false, user=null, posts=[
+ {name:"ananya",text:"Golden hour and good vibes ✨",emoji:"🌅",likes:24},
+ {name:"rahul",text:"Little moments, big memories.",emoji:"🏞️",likes:12}
+];
+function toggleAuth(){signup=!signup;document.getElementById('authTitle').textContent=signup?'Create your account':'Welcome back';document.getElementById('nameWrap').classList.toggle('hidden',!signup);document.getElementById('switchAuth').textContent=signup?'Already have an account? Log in':'Create an account';document.getElementById('authError').textContent=''}
+function login(){let email=document.getElementById('email').value.trim(),pass=document.getElementById('password').value,name=document.getElementById('displayName').value.trim();if(!email.includes('@')||pass.length<6||(signup&&!name)){document.getElementById('authError').textContent='Enter a valid email, password (6+ characters)'+(signup?' and name.':'.');return}user={email,name:name||email.split('@')[0]};document.getElementById('nav').classList.remove('hidden');renderProfile();showScreen('home')}
+function logout(){user=null;document.getElementById('nav').classList.add('hidden');showScreen('login')}
+function showScreen(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.bottom button').forEach(x=>x.classList.toggle('selected',x.dataset.screen===id));if(id==='home')renderFeed()}
+function renderProfile(){document.getElementById('profileName').textContent=user.name;document.getElementById('profileEmail').textContent=user.email;document.getElementById('profileAvatar').textContent=user.name[0].toUpperCase()}
+function renderFeed(){document.getElementById('feed').innerHTML=posts.map((p,i)=>`<article class="card"><div class="posthead"><div class="avatar">${p.name[0].toUpperCase()}</div><div><b>${escapeHtml(p.name)}</b><div class="muted" style="font-size:11px">Quickgram · just now</div></div></div><p>${escapeHtml(p.text)}</p><div class="postimage">${p.emoji}</div><div class="actions"><button onclick="likePost(${i},this)">♡</button><span class="muted">${p.likes} likes</span><button onclick="alert('Comments are coming soon!')">♧</button></div></article>`).join('');document.getElementById('postCount').textContent=posts.filter(p=>user&&p.name===user.name).length}
+function likePost(i,btn){posts[i].likes++;btn.textContent='♥';btn.style.color='#f58abf';renderFeed()}
+function addPost(){let input=document.getElementById('newPost'),text=input.value.trim();if(!text)return;posts.unshift({name:user.name,text,emoji:'💜',likes:0});input.value='';renderFeed()}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+</script>
+</body></html>
